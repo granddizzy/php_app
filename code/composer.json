@@ -1,0 +1,18 @@
+{
+    "name": "gb/app",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "GB\\App\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Lepihov Roman"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "twig/twig": "^3.0"
+    }
+}
