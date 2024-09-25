@@ -2,6 +2,8 @@
 
 namespace GB\App;
 
+use GB\App\Controllers\PageController;
+
 class Application
 {
   private const APP_NAMESPACE = "GB\\App\\Controllers\\";
@@ -35,7 +37,8 @@ class Application
         return "Метод не существует";
       }
     } else {
-      return "Класс не существует";
+      $controllerInstance = new PageController;
+      return call_user_func_array([$controllerInstance, 'actionError404'], []);
     }
   }
 }

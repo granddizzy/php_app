@@ -1,0 +1,15 @@
+<p>{{ title }}</p>
+
+<ul id="navigation">
+    {% for user in users %}
+        <li>
+            {{ user.getUsername() }}. День
+            рождения {{ user.getBirthday() ? user.getBirthday()|date('d.m.Y') : 'Не указана' }}
+            <form method="GET" action="/users/delete/" style="display:inline;">
+                <input type="hidden" name="name" value="{{ user.getUsername() }}">
+                <button type="submit">Удалить</button>
+            </form>
+        </li>
+    {% endfor %}
+</ul>
+{% include 'users-add.twig' %}

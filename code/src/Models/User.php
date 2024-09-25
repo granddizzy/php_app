@@ -4,9 +4,9 @@ namespace GB\App\Models;
 
 class User {
   private string $username;
-  private int|null $userBirthday = null;
+  private int|null $userBirthday;
 
-  private static string $storageAddress = '/storage/birthday.txt';
+  private static string $storageAddress = '/storage/birthdays.txt';
 
   public function __construct(string $name, int $birthday = null) {
     $this->username = $name;
@@ -33,14 +33,15 @@ class User {
     $this->userBirthday = strtotime($birthday);
   }
 
-  public static function getAllUsersFromStorage(): string {
+  public static function getAllUsersFromStorage(): array {
     $address = $_SERVER["DOCUMENT_ROOT"] . User::$storageAddress;
+    $users = [];
     if (file_exists($address) && is_readable($address)) {
       $file = fopen($address, "r");
-      $users = [];
 
       while (!feof($file)) {
         $userStr = fgets($file);
+        if (empty($userStr)) continue;
         $userArr = explode(", ", $userStr);
 
         $user = new User($userArr[0]);
@@ -50,9 +51,37 @@ class User {
       }
 
       fclose($file);
-      return $users;
-    } else {
-      return false;
     }
+    return $users;
+  }
+
+  public static function saveUser(User $user): void {
+    $address = $_SERVER["DOCUMENT_ROOT"] . self::$storageAddress;
+    file_put_contents($address, $user->getUsername() . ', ' . date('Y-m-d', $user->getBirthday()) . PHP_EOL, FILE_APPEND);
+  }
+
+  public static function deleteUser(string $username): bool {
+    $address = $_SERVER["DOCUMENT_ROOT"] . self::$storageAddress;
+    if (!file_exists($address)) return false;
+
+    $users = User::getAllUsersFromStorage();
+    $updatedUsers = [];
+
+    foreach ($users as $user) {
+      if ($user->getUsername() !== $username) {
+        $updatedUsers[] = $user;
+      }
+    }
+
+    if (count($users) !== count($updatedUsers)) {
+      $file = fopen($address, "w");
+      foreach ($updatedUsers as $user) {
+        fwrite($file, $user->getUsername() . ', ' . date('Y-m-d', $user->getBirthday()) . PHP_EOL);
+      }
+      fclose($file);
+      return true;
+    }
+
+    return false;
   }
 }

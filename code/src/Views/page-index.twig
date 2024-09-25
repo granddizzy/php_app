@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+
+    <link rel="stylesheet" href="/css/styles.css">
+
+</head>
+<body>
+
+{% include 'site-header.twig' %}
+
+<div class="container">
+    {% include 'site-sidebar.twig' %}
+
+    <main>
+        {% block content %}
+            <h2>{{ heading }}</h2>
+            <ul>
+                {% for item in items %}
+                    <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        {% endblock %}
+    </main>
+</div>
+
+{% include 'site-footer.twig' %}
+
+</body>
+</html>
