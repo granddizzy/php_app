@@ -11,6 +11,8 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 
 RUN apt-get update && apt-get install zip unzip
 
+RUN docker-php-ext-install pdo pdo_mysql
+
 WORKDIR /code
 
 CMD ["php-fpm"]

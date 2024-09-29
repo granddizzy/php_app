@@ -1,13 +1,13 @@
 <?php
 
-namespace GB\App;
+namespace GB\App\Application;
 
-use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 class Render
 {
-  private $viewFolder = '/src/Views';
+  private $viewFolder = '/src/Domain/Views';
   private FilesystemLoader $loader;
 
   private Environment $environment;

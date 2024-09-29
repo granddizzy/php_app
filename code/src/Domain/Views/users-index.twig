@@ -1,0 +1,21 @@
+{% extends 'main.twig' %}
+
+ {% block content %}
+
+     <p>{{ title }}</p>
+     <p>{{ message }}</p>
+     <ul id="navigation">
+         {% for user in users %}
+             <li>
+                 {{ user.getUsername() }} {{ user.getUserLastname() }}. День
+                 рождения {{ user.getBirthday() ? user.getBirthday()|date('d.m.Y') : 'Не указана' }}
+                 <form method="GET" action="/users/delete/" style="display:inline;">
+                     <input type="hidden" name="id" value="{{ user.getId() }}">
+                     <button type="submit">Удалить</button>
+                 </form>
+             </li>
+         {% endfor %}
+     </ul>
+     {% include 'users-add.twig' %}
+
+ {% endblock %}

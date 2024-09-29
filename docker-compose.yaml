@@ -31,6 +31,34 @@ services:
     networks:
       - app-network
 
+  php-cli:
+    build:
+      context: ./php-cli
+      dockerfile: Dockerfile
+    image: myapp/php # можно использовать тот же образ, что и для PHP-FPM
+    container_name: php-cli
+    volumes:
+      - ./code:/code/
+    networks:
+      - app-network
+    tty: true
+
+  database:
+    image: mysql:5.7
+    container_name: database
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+
+    ports:
+      - "3308:3306"
+    volumes:
+      - ./db:/var/lib/mysql
+    networks:
+      - app-network
+
 #Docker Networks
 networks:
   app-network:

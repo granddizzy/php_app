@@ -1,8 +1,8 @@
 <?php
 
-namespace GB\App\Controllers;
+namespace GB\App\Domain\Controllers;
 
-use GB\App\Render;
+use GB\App\Application\Render;
 
 class PageController {
   public function actionIndex(): string {
@@ -14,7 +14,7 @@ class PageController {
 
   public function actionError404(): string {
     $render = new Render();
-    header("HTTP/1.0 404 Not Found");
+    header("HTTP/1.1 404 Not Found");
     return $render->renderPage('page-error404.twig', []);
   }
 }
