@@ -1,8 +1,15 @@
-<h2>Изменить пользователя</h2>
-<form method="POST" action="{{ baseUrl }}/users/update/{{ userId }}">
-    <input type="hidden" name="id" value="{{ userId }}">
-    <input type="text" name="name" placeholder="Имя" value="{{ user.name }}" required>
-    <input type="text" name="lastname" placeholder="Фамилия" value="{{ user.lastname }}" required>
-    <input type="date" name="birthday" placeholder="Дата рождения" value="{{ user.birthday }}">
-    <button type="submit">Сохранить изменения</button>
-</form>
+{% extends 'main.twig' %}
+
+ {% block content %}
+
+     <h2>Изменить пользователя</h2>
+     <form method="GET" action="{{ baseUrl }}/users/update/{{ userId }}">
+         <input type="hidden" name="id" value="{{ userId }}">
+         <input type="text" name="name" placeholder="Имя" value="{{ username }}" required>
+         <input type="text" name="lastname" placeholder="Фамилия" value="{{ lastname }}" required>
+         <input type="date" name="birthday" placeholder="Дата рождения" value="{{ birthday }}">
+         <button type="submit">Сохранить</button>
+         <button type="button" onclick="window.location='{{ baseUrl }}/users';">Отмена</button>
+     </form>
+
+ {% endblock %}

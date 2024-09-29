@@ -2,7 +2,6 @@
 
 namespace GB\App\Application;
 
-use http\Exception;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
@@ -31,6 +30,7 @@ class Render {
   }
 
   public function renderExceptionPage(\Exception $e): string {
-    return $this->renderPage("page-exception.twig", ["errorMessage" => $e->getMessage()]);
+    return $this->renderPage("page-exception.twig",
+      ["errorMessage" => $e->getMessage()]);
   }
 }

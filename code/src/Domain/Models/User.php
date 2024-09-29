@@ -4,17 +4,18 @@ namespace GB\App\Domain\Models;
 
 use GB\App\Application\Application;
 use GB\App\Infrastructure\Storage;
+use PDO;
 
 class User {
   private int $id;
   private string $username;
-  private string $userLastname;
-  private int|null $userBirthday;
+  private string $lastname;
+  private int|null $birthday;
 
   public function __construct(string $name = '', string $lastname = '', int $birthday = null) {
     $this->username = $name;
-    $this->userBirthday = $birthday;
-    $this->userLastname = $lastname;
+    $this->birthday = $birthday;
+    $this->lastname = $lastname;
     $this->id = 0;
   }
 
@@ -31,11 +32,11 @@ class User {
   }
 
   public function getLastname(): string {
-    return $this->userLastname;
+    return $this->lastname;
   }
 
   public function getBirthday(): ?int {
-    return $this->userBirthday;
+    return $this->birthday;
   }
 
   public function setUsername(string $username): void {
@@ -43,15 +44,20 @@ class User {
   }
 
   public function setLastname(string $lastname): void {
-    $this->userLastname = $lastname;
+    $this->lastname = $lastname;
   }
 
   public function setBirthday(int $birthday): void {
-    $this->userBirthday = $birthday;
+    $this->birthday = $birthday;
   }
 
   public function setBirthdayFromString(string $birthday): void {
-    $this->userBirthday = strtotime($birthday);
+    $this->birthday = strtotime($birthday);
+  }
+
+  public static function getBirthdayFromTimestamp(int $timestamp): string {
+    $date = (new \DateTime())->setTimestamp($timestamp);
+    return $date->format('Y-m-d');
   }
 
   public static function getAllUsersFromStorage(): array {
@@ -102,9 +108,25 @@ class User {
   }
 
   public function setParamsFromRequestData(): void {
-    $this->username = $_GET["name"];
-    $this->userLastname = $_GET["lastname"];
-    $this->setBirthdayFromString($_GET["birthday"]);
+    if (isset($_GET["name"])) $this->username = $_GET["name"];
+    if (isset($_GET["lastname"])) $this->lastname = $_GET["lastname"];
+    if (isset($_GET["birthday"])) $this->setBirthdayFromString($_GET["birthday"]);
+    if (isset($_GET["id"])) $this->setId($_GET["id"]);
+  }
+
+  public function setParamsFromStorage(): void {
+    $storage = new Storage();
+    $sql = "SELECT * FROM users WHERE id_user = :id";
+    $handler = $storage->get()->prepare($sql);
+    $handler->execute(['id' => $this->getId()]);
+
+    $result = $handler->fetch(PDO::FETCH_ASSOC);
+
+    if ($result) {
+      $this->setUsername($result['user_name']);
+      $this->setLastname($result['user_lastname']);
+      $this->setBirthday($result['user_birthday_timestamp']);
+    }
   }
 
   public function saveToStorage(): void {
@@ -113,8 +135,21 @@ class User {
     $handler = $storage->get()->prepare($sql);
     $handler->execute([
       "user_name" => $this->username,
-      "user_lastname" => $this->userLastname,
-      "user_birthday" => $this->userBirthday,
+      "user_lastname" => $this->lastname,
+      "user_birthday" => $this->birthday,
     ]);
+  }
+
+  public function updateStorage(): void {
+    $storage = new Storage();
+    $sql = "UPDATE users SET user_name = :user_name, user_lastname = :user_lastname, user_birthday_timestamp = :user_birthday WHERE id_user = :user_id";
+    $handler = $storage->get()->prepare($sql);
+    $handler->execute([
+      "user_name" => $this->username,
+      "user_lastname" => $this->lastname,
+      "user_birthday" => $this->birthday,
+      "user_id" => $this->getId(),
+    ]);
+    var_dump($this->getId());
   }
 }
