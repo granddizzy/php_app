@@ -24,8 +24,10 @@ class Render
 
   public function renderPage(string $contentTemplateName = "page-index.twig", array $templateVariables = []): string
   {
+    $baseUrl = Application::$config->get()['app']['BASE_URL'];
 
     $templateVariables['content_template_name'] = $contentTemplateName;
+    $templateVariables['baseUrl'] = $baseUrl;
 
 //    return $template->render($templateVariables);
 

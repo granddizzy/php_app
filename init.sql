@@ -1,4 +1,4 @@
-CREATE TABLE `application1`.`Users`
+CREATE TABLE `application1`.`users`
 (
     `id_user`                 INT NOT NULL AUTO_INCREMENT,
     `user_name`               VARCHAR(45) NULL,

@@ -17,23 +17,6 @@ class UsersController {
     }
   }
 
-  public function actionSave1(): string {
-    $name = $_GET['name'] ?? null;
-    $birthday = $_GET['birthday'] ?? null;
-
-    if (!$name) {
-      return "Ошибка: не указано имя пользователя.";
-    }
-
-    $user = new User($name);
-    if ($birthday) {
-      $user->setBirthdayFromString($birthday);
-    }
-
-    User::saveUser($user);
-    return "Пользователь" . $user->getUsername() . " " . $user->getLastname() . "добавлен.";
-  }
-
   public function actionSave(): string {
     if (User::validateRequestData()) {
       $user = new User();
