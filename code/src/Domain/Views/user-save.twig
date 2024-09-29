@@ -1,1 +1,8 @@
-<p>{{ message }}</p>
+{% extends 'main.twig' %}
+
+ {% block content %}
+
+     <h3>{{ message }}</h3>
+     <a href="{{ baseUrl }}/">Вернуться на главную</a>
+
+ {% endblock %}

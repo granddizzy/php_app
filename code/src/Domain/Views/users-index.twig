@@ -9,9 +9,15 @@
              <li>
                  {{ user.getUsername() }} {{ user.getLastname() }}. День
                  рождения {{ user.getBirthday() ? user.getBirthday()|date('d.m.Y') : 'Не указана' }}
+
                  <form method="GET" action="{{ baseUrl }}/users/delete/" style="display:inline;">
                      <input type="hidden" name="id" value="{{ user.getId() }}">
                      <button type="submit">Удалить</button>
+                 </form>
+
+                 <form method="GET" action="{{ baseUrl }}/users/edit/" style="display:inline;">
+                     <input type="hidden" name="id" value="{{ user.getId() }}">
+                     <button type="submit">Изменить</button>
                  </form>
              </li>
          {% endfor %}

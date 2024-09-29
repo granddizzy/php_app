@@ -43,7 +43,8 @@ class Application
         $controllerInstance = new $this->controllerName;
         return call_user_func_array([$controllerInstance, $this->methodName], []);
       } else {
-        return "Метод не существует";
+        $controllerInstance = new PageController;
+        return call_user_func_array([$controllerInstance, 'actionError'], ["Метод не существует"]);
       }
     } else {
       $controllerInstance = new PageController;

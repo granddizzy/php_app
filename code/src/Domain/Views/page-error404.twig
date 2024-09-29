@@ -1,13 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>404 - Страница не найдена</title>
-    <link rel="stylesheet" href="{{ baseUrl }}/src/css/styles.css">
-</head>
-<body>
-<h1>404 - Страница не найдена</h1>
-<p>К сожалению, страница, которую вы ищете, не существует.</p>
-<a href="{{ baseUrl }}">Вернуться на главную</a>
-</body>
-</html>
+{% extends 'main.twig' %}
+
+ {% block content %}
+
+     <h1>404 - Страница не найдена</h1>
+     <p>К сожалению, страница, которую вы ищете, не существует.</p>
+     <a href="{{ baseUrl }}/">Вернуться на главную</a>
+
+ {% endblock %}

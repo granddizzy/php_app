@@ -1,13 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Ошибка</title>
-    <link rel="stylesheet" href="{{ baseUrl }}/src/css/styles.css">
-</head>
-<body>
-<h1>Произошла ошибка</h1>
-<p>{{ errorMessage }}</p>
-<a href="{{ baseUrl }}">Вернуться на главную</a>
-</body>
-</html>
+{% extends 'main.twig' %}
+
+ {% block content %}
+
+     <h1>Произошла ошибка</h1>
+     <p>{{ errorMessage }}</p>
+     <a href="{{ baseUrl }}/">Вернуться на главную</a>
+
+ {% endblock %}

@@ -15,6 +15,11 @@ class PageController {
   public function actionError404(): string {
     $render = new Render();
     header("HTTP/1.1 404 Not Found");
-    return $render->renderPage('page-error404.twig', []);
+    return $render->renderPage('page-error404.twig');
+  }
+
+  public function actionError(string $errorMessage): string {
+    $render = new Render();
+    return $render->renderPage('page-exception.twig', ['errorMessage' => $errorMessage]);
   }
 }

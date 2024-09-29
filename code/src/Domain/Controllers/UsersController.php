@@ -27,8 +27,8 @@ class UsersController {
       return $render->renderPage(
         'user-created.twig',
         [
-          'title' => "Пользователь создан",
-          'message' => "Создан пользователь" . $user->getUsername() . " " . $user->getLastname()
+          'title' => "Пользователи",
+          'message' => "Создан пользователь: " . $user->getUsername() . " " . $user->getLastname()
         ]
       );
     } else {
@@ -40,13 +40,34 @@ class UsersController {
     $id = $_GET['id'] ?? null;
 
     if (!$id) {
-      return "Ошибка: не указан параметр id.";
+      $render = new Render();
+      return $render->renderPage(
+        'user-created.twig',
+        [
+          'title' => "Ошибка",
+          'message' => "Ошибка: не указан параметр id."
+        ]
+      );
     }
 
     if (User::deleteUserFromStorage($id)) {
-      return "Пользователь удален.";
+      $render = new Render();
+      return $render->renderPage(
+        'user-created.twig',
+        [
+          'title' => "Пользователи",
+          'message' => "Пользователь удален."
+        ]
+      );
     } else {
-      return "Ошибка: пользователь не найден.";
+      $render = new Render();
+      return $render->renderPage(
+        'user-created.twig',
+        [
+          'title' => "Ошибка",
+          'message' => "Пользователь не найден."
+        ]
+      );
     }
   }
 }
