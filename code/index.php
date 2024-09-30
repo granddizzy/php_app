@@ -9,6 +9,5 @@ try {
   $app = new Application();
   echo $app->run();
 } catch (Exception $e) {
-  $render = new Render();
-  echo  $render->renderExceptionPage($e);
+  echo Render::renderExceptionPage($e);
 }

@@ -22,15 +22,25 @@ class Render {
 
   public function renderPage(string $contentTemplateName = "page-index.twig", array $templateVariables = []): string {
     $baseUrl = Application::$config->get()['app']['BASE_URL'];
+    $debug = Application::$config->get()['debug']['DEBUG'];
 
     $templateVariables['content_template_name'] = $contentTemplateName;
     $templateVariables['baseUrl'] = $baseUrl;
+    $templateVariables['debug'] = $debug;
 
     return $this->environment->render($contentTemplateName, $templateVariables);
   }
 
-  public function renderExceptionPage(\Exception $e): string {
-    return $this->renderPage("page-exception.twig",
-      ["errorMessage" => $e->getMessage()]);
+  public static function renderExceptionPage(\Exception $e): string {
+    $renderer = new self();
+
+    $templateVariables = [
+      "errorMessage" => $e->getMessage(),
+      "errorFile" => $e->getFile(),
+      "errorLine" => $e->getLine(),
+      "errorTrace" => $e->getTraceAsString(),
+    ];
+
+    return $renderer->renderPage("page-exception.twig", $templateVariables);
   }
 }

@@ -61,20 +61,24 @@ class User {
   }
 
   public static function getAllUsersFromStorage(): array {
-    $sql = "SELECT * FROM users";
-    $handler = Application::$storage->get()->prepare($sql);
-    $handler->execute();
-    $result = $handler->fetchAll();
+    try {
+      $sql = "SELECT * FROM users";
+      $handler = Application::$storage->get()->prepare($sql);
+      $handler->execute();
+      $result = $handler->fetchAll();
 
-    $users = [];
+      $users = [];
 
-    foreach ($result as $item) {
-      $user = new User($item['user_name'], $item['user_lastname'], $item['user_birthday_timestamp']);
-      $user->setId($item['id_user']);
-      $users[] = $user;
+      foreach ($result as $item) {
+        $user = new User($item['user_name'], $item['user_lastname'], $item['user_birthday_timestamp']);
+        $user->setId($item['id_user']);
+        $users[] = $user;
+      }
+
+      return $users;
+    } catch (PDOException $e) {
+      throw new Exception("Ошибка при получении пользователей: " . $e->getMessage());
     }
-
-    return $users;
   }
 
   public static function deleteUserFromStorage(string $id): bool {
@@ -92,15 +96,17 @@ class User {
         return false;
       }
     } catch (PDOException $e) {
-      return false;
+      throw new \Exception("Ошибка при удалении пользователя: " . $e->getMessage());
     }
   }
 
   public static function validateRequestData(): bool {
+    $patternDate = '/^(19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/';
+
     if (
-      isset($_GET['name']) && !empty($_GET['name']) &&
-      isset($_GET['lastname']) && !empty($_GET['lastname']) &&
-      isset($_GET['birthday']) && !empty($_GET['birthday'])
+      isset($_POST['name']) && !empty($_POST['name']) &&
+      isset($_POST['lastname']) && !empty($_POST['lastname']) &&
+      isset($_POST['birthday']) && preg_match($patternDate, $_POST['birthday'])
     ) {
       return true;
     }
@@ -108,48 +114,69 @@ class User {
   }
 
   public function setParamsFromRequestData(): void {
-    if (isset($_GET["name"])) $this->username = $_GET["name"];
-    if (isset($_GET["lastname"])) $this->lastname = $_GET["lastname"];
-    if (isset($_GET["birthday"])) $this->setBirthdayFromString($_GET["birthday"]);
-    if (isset($_GET["id"])) $this->setId($_GET["id"]);
+    if (isset($_POST["name"])) {
+      $this->username = htmlspecialchars($_POST["name"], ENT_QUOTES, 'UTF-8');
+    }
+    if (isset($_POST["lastname"])) {
+      $this->lastname = htmlspecialchars($_POST["lastname"], ENT_QUOTES, 'UTF-8');
+    }
+    if (isset($_POST["birthday"])) {
+      $this->setBirthdayFromString($_POST["birthday"]);
+    }
+    if (isset($_POST["id"])) {
+      $this->setId((int)$_POST["id"]);
+    }
   }
 
   public function setParamsFromStorage(): void {
-    $storage = new Storage();
-    $sql = "SELECT * FROM users WHERE id_user = :id";
-    $handler = $storage->get()->prepare($sql);
-    $handler->execute(['id' => $this->getId()]);
+    try {
+      $storage = new Storage();
+      $sql = "SELECT * FROM users WHERE id_user = :id";
+      $handler = $storage->get()->prepare($sql);
+      $handler->execute(['id' => $this->getId()]);
 
-    $result = $handler->fetch(PDO::FETCH_ASSOC);
+      $result = $handler->fetch(PDO::FETCH_ASSOC);
 
-    if ($result) {
-      $this->setUsername($result['user_name']);
-      $this->setLastname($result['user_lastname']);
-      $this->setBirthday($result['user_birthday_timestamp']);
+      if ($result) {
+        $this->setUsername($result['user_name']);
+        $this->setLastname($result['user_lastname']);
+        $this->setBirthday($result['user_birthday_timestamp']);
+      }
+    } catch (PDOException $e) {
+      throw new \Exception("Ошибка при получении данных пользователя: " . $e->getMessage());
     }
   }
 
   public function saveToStorage(): void {
-    $storage = new Storage();
-    $sql = "INSERT INTO users (user_name, user_lastname, user_birthday_timestamp) VALUES (:user_name, :user_lastname, :user_birthday)";
-    $handler = $storage->get()->prepare($sql);
-    $handler->execute([
-      "user_name" => $this->username,
-      "user_lastname" => $this->lastname,
-      "user_birthday" => $this->birthday,
-    ]);
+    try {
+      $storage = new Storage();
+      $sql = "INSERT INTO users (user_name, user_lastname, user_birthday_timestamp) VALUES (:user_name, :user_lastname, :user_birthday)";
+      $handler = $storage->get()->prepare($sql);
+      $handler->execute([
+        "user_name" => $this->username,
+        "user_lastname" => $this->lastname,
+        "user_birthday" => $this->birthday,
+      ]);
+    } catch (PDOException $e) {
+      throw new \Exception("Ошибка при сохранении пользователя: " . $e->getMessage());
+    }
   }
 
-  public function updateStorage(): void {
-    $storage = new Storage();
-    $sql = "UPDATE users SET user_name = :user_name, user_lastname = :user_lastname, user_birthday_timestamp = :user_birthday WHERE id_user = :user_id";
-    $handler = $storage->get()->prepare($sql);
-    $handler->execute([
-      "user_name" => $this->username,
-      "user_lastname" => $this->lastname,
-      "user_birthday" => $this->birthday,
-      "user_id" => $this->getId(),
-    ]);
-    var_dump($this->getId());
+  public function updateStorage(): bool {
+    try {
+      $storage = new Storage();
+      $sql = "UPDATE users SET user_name = :user_name, user_lastname = :user_lastname, user_birthday_timestamp = :user_birthday WHERE id_user = :user_id";
+      $handler = $storage->get()->prepare($sql);
+      $handler->execute([
+        "user_name" => $this->username,
+        "user_lastname" => $this->lastname,
+        "user_birthday" => $this->birthday,
+        "user_id" => $this->getId(),
+      ]);
+      return true;
+
+    } catch (PDOException $e) {
+      throw new \Exception("Ошибка при обновлении пользователя: " . $e->getMessage());
+    }
   }
 }

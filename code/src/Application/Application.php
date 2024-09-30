@@ -22,6 +22,7 @@ class Application
   public function run(): string
   {
     $routeArr = explode('/', $_SERVER['REQUEST_URI']);
+
     if (isset($routeArr[1]) && $routeArr[1] != '') {
       $controllerName = $routeArr[1];
     } else {

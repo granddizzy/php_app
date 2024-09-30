@@ -3,7 +3,13 @@
  {% block content %}
 
      <h1>Произошла ошибка</h1>
-     <p>{{ errorMessage }}</p>
-     <a href="{{ baseUrl }}/">Вернуться на главную</a>
+     <p><strong>Сообщение:</strong> {{ errorMessage }}</p>
 
+     {% if debug %}
+         <p><strong>Файл:</strong> {{ errorFile }} (строка {{ errorLine }})</p>
+         <p><strong>Трассировка:</strong></p>
+         <pre>{{ errorTrace }}</pre>
+     {% endif %}
+
+     <p><a href="javascript:history.back()">Вернуться назад</a></p>
  {% endblock %}
