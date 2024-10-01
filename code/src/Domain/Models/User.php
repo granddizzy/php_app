@@ -189,4 +189,48 @@ class User {
       throw new \Exception("Ошибка при обновлении пользователя: " . $e->getMessage());
     }
   }
+
+  public static function getUserRoles(): array {
+    $roles = [];
+    if (isset($_SESSION['id_user'])) {
+      $rolesSql = "SELECT * FROM user_roles WHERE id_user = :id";
+      $handler = Application::$storage->get()->prepare($rolesSql);
+      $handler->execute([':id' => $_SESSION['id_user']]);
+      $result = $handler->fetchAll();
+
+      if (!empty($result)) {
+        foreach ($result as $role) {
+          $roles[] = $role['role'];
+        }
+      }
+    }
+
+    return $roles;
+  }
+
+  public static function saveRememberMeToken(string $id_user, string $token): void {
+    $sql = "INSERT INTO remember_me_tokens (id_user, token) VALUES (:id_user, :token) ON DUPLICATE KEY UPDATE token = :token";
+    $handler = Application::$storage->get()->prepare($sql);
+    $handler->execute(['id_user' => $id_user, 'token' => $token]);
+  }
+
+  public static function checkRememberMeToken(string $token): User|null {
+    $sql = "SELECT id_user FROM remember_me_tokens WHERE token = :token";
+    $handler = Application::$storage->get()->prepare($sql);
+    $handler->execute(['token' => $token]);
+    $result = $handler->fetch();
+    if ($result) {
+      $user = new User($result['id_user']);
+      $user->setParamsFromStorage();
+      return $user;
+    }
+
+    return null;
+  }
+
+  public static function deleteRememberMeToken(int $userId): void {
+    $sql = "DELETE FROM remember_me_tokens WHERE id_user = :id_user";
+    $handler = Application::$storage->get()->prepare($sql);
+    $handler->execute(['id_user' => $userId]);
+  }
 }

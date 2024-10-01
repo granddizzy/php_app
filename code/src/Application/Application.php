@@ -3,24 +3,25 @@
 namespace GB\App\Application;
 
 use GB\App\Domain\Controllers\PageController;
+use GB\App\Domain\Models\User;
 use GB\App\Infrastructure\Config;
 use GB\App\Infrastructure\Storage;
 
-class Application
-{
+class Application {
   private const APP_NAMESPACE = "GB\\App\\Domain\\Controllers\\";
   private string $controllerName;
   private string $methodName;
   public static Config $config;
   public static Storage $storage;
+  public static Auth $auth;
 
   public function __construct() {
     Application::$config = new Config();
     Application::$storage = new Storage();
+    Application::$auth = new Auth();
   }
 
-  public function run(): string
-  {
+  public function run(): string {
     session_start();
     $routeArr = explode('/', $_SERVER['REQUEST_URI']);
 
@@ -31,6 +32,8 @@ class Application
     }
 
     $this->controllerName = Application::APP_NAMESPACE . ucfirst($controllerName) . 'Controller';
+
+    Application::$auth->autoAuth();
 
     if (class_exists($this->controllerName)) {
       if (isset($routeArr[2]) && $routeArr[2] != '') {
@@ -43,6 +46,15 @@ class Application
 
       if (method_exists($this->controllerName, $this->methodName)) {
         $controllerInstance = new $this->controllerName;
+
+        if ($controllerInstance instanceof AbstractController) {
+          if ($this->checkAccessToMethod($controllerInstance, $this->methodName)) {
+            return call_user_func_array([$controllerInstance, $this->methodName], []);
+          } else {
+            return "Нет доступа к методу";
+          }
+        }
+
         return call_user_func_array([$controllerInstance, $this->methodName], []);
       } else {
         $controllerInstance = new PageController;
@@ -52,5 +64,24 @@ class Application
       $controllerInstance = new PageController;
       return call_user_func_array([$controllerInstance, 'actionError404'], []);
     }
+  }
+
+  public function checkAccessToMethod(AbstractController $controllerInstance, string $methodName): bool {
+    $userRoles = User::getUserRoles();
+    $rules = $controllerInstance->getActionsPermissions($methodName);
+
+    $isAllowed = false;
+    if (!empty($rules)) {
+      foreach ($rules as $rolePermission) {
+        if (in_array($rolePermission, $userRoles)) {
+          $isAllowed = true;
+          break;
+        }
+      }
+    } else {
+      return true;
+    }
+
+    return $isAllowed;
   }
 }

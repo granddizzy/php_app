@@ -2,11 +2,17 @@
 
 namespace GB\App\Domain\Controllers;
 
+use GB\App\Application\AbstractController;
 use GB\App\Application\Application;
 use GB\App\Application\Render;
 use GB\App\Domain\Models\User;
 
-class UsersController {
+class UsersController extends AbstractController {
+  protected array $actionsPermissions = [
+    'actionHash' => ['admin', 'manager'],
+    'actionSave' => ['admin']
+  ];
+
   public function actionIndex(): string {
     $users = User::getAllUsersFromStorage();
 
@@ -82,5 +88,66 @@ class UsersController {
     } else {
       throw new \Exception("Пользователь не найден.");
     }
+  }
+
+  public function actionAuth(): string {
+    $render = new Render();
+
+    return $render->renderPageWithForm('user-auth.twig',
+      [
+        'title' => 'Форма логина',
+        'autherror' => ""
+      ]);
+  }
+
+  public function actionLogin(): string {
+    $result = false;
+
+    if (isset($_POST['login']) && $_POST['password']) {
+      $result = Application::$auth->proceedAuth($_POST['login'], $_POST['password']);
+    }
+
+    // Если пользователь успешно авторизован и выбран чекбокс "Запомнить меня"
+    if ($result && isset($_POST['remember'])) {
+      $token = bin2hex(random_bytes(16));
+      $userId = $_SESSION['id_user'];
+
+      // Сохраняем токен в базе данных
+      User::saveRememberMeToken($userId, $token);
+
+      // Устанавливаем куку с токеном на 30 дней
+      setcookie('remember_me', $token, time() + (86400 * 30), "/");
+    }
+
+    if (!$result) {
+      $render = new Render();
+      return $render->renderPageWithForm('user-auth.twig',
+        [
+          'title' => 'Форма логина',
+          'authsuccess' => false,
+          'autherror' => 'Неверные логин или пароль'
+        ]);
+    } else {
+      $baseUrl = Application::$config->get()['app']['BASE_URL'];
+      header("Location: {$baseUrl}/");
+      return "";
+    }
+  }
+
+  public function actionLogout() {
+    // Удаляем токен из базы данных
+    if (isset($_COOKIE['remember_me'])) {
+      User::deleteRememberMeToken($_SESSION['id_user']);
+    }
+
+    session_unset();
+    session_destroy();
+
+    // Удаляем куки
+    setcookie('remember_me', '', time() - 3600, "/"); // Устанавливаем срок действия в прошлом
+
+    $baseUrl = Application::$config->get()['app']['BASE_URL'];
+    header("Location: {$baseUrl}/users/auth");
+    exit();
   }
 }

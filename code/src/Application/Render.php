@@ -28,6 +28,12 @@ class Render {
     $templateVariables['baseUrl'] = $baseUrl;
     $templateVariables['debug'] = $debug;
 
+    if (isset($_SESSION['user_name'])) {
+      $templateVariables['user_authorized'] = true;
+      $templateVariables['username'] = $_SESSION['user_name'];
+      $templateVariables['userlastname'] = $_SESSION['user_lastname'];
+    }
+
     return $this->environment->render($contentTemplateName, $templateVariables);
   }
 
