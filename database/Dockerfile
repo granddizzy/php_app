@@ -1,7 +1,7 @@
 # Dockerfile для контейнера базы данных
-FROM mariadb:latest
+FROM mariadb:10.5
 
 # Установка клиента MariaDB
 RUN apt-get update && \
-    apt-get install -y default-mysql-client && \
+    apt-get install -y mariadb-client && \
     apt-get clean && rm -rf /var/lib/apt/lists/*

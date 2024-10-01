@@ -30,18 +30,30 @@ services:
     # мы можем создать для контейнеров внутреннюю сеть
     networks:
       - app-network
+    depends_on:
+      - database
+      - memcache
 
-  php-cli:
-    build:
-      context: ./php-cli
-      dockerfile: Dockerfile
-    image: myapp/php # можно использовать тот же образ, что и для PHP-FPM
-    container_name: php-cli
-    volumes:
-      - ./code:/code/
+  #  php-cli:
+#    build:
+#      context: ./php-cli
+#      dockerfile: Dockerfile
+#    image: myapp/php # можно использовать тот же образ, что и для PHP-FPM
+#    container_name: php-cli
+#    volumes:
+#      - ./code:/code/
+#    networks:
+#      - app-network
+#    tty: true
+
+  memcache:
+    image: memcached:latest
+    container_name: memcached
+    ports:
+      - "11211:11211"
+    command: memcached -m 64
     networks:
       - app-network
-    tty: true
 
   database:
     build:

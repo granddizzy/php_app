@@ -1,5 +1,6 @@
 <h2>Добавить пользователя</h2>
 <form method="POST" action="{{ baseUrl }}/users/save/">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <input type="text" name="name" placeholder="Имя" required>
     <input type="text" name="lastname" placeholder="Фамилия" required>
     <input type="date" name="birthday" placeholder="Дата рождения">

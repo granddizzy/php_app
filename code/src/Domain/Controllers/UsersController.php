@@ -12,10 +12,10 @@ class UsersController {
 
     $render = new Render();
     if (!$users) {
-      return $render->renderPage('users-index.twig',
+      return $render->renderPageWithForm('users-index.twig',
         ['title' => "Список пользователей:", 'message' => "Список пуст."]);
     } else {
-      return $render->renderPage('users-index.twig',
+      return $render->renderPageWithForm('users-index.twig',
         ['title' => 'Список пользователей:', 'users' => $users]);
     }
   }
@@ -27,7 +27,7 @@ class UsersController {
       $user = new User();
       $user->setId($id);
       $user->setParamsFromStorage();
-      return $render->renderPage('user-edit.twig',
+      return $render->renderPageWithForm('user-edit.twig',
         ["title" => "Пользлватели:",
           "message" => "Список пуст.",
           "userId" => $id,

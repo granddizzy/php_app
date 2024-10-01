@@ -31,6 +31,14 @@ class Render {
     return $this->environment->render($contentTemplateName, $templateVariables);
   }
 
+  public function renderPageWithForm(string $contentTemplateName = "page-index.twig", array $templateVariables = []): string {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+
+    $templateVariables['csrf_token'] = $_SESSION['csrf_token'];
+
+    return $this->renderPage($contentTemplateName, $templateVariables);
+  }
+
   public static function renderExceptionPage(\Exception $e): string {
     $renderer = new self();
 

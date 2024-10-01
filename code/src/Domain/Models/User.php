@@ -103,14 +103,24 @@ class User {
   public static function validateRequestData(): bool {
     $patternDate = '/^(19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/';
 
-    if (
+    $result = true;
+    if (!(
       isset($_POST['name']) && !empty($_POST['name']) &&
       isset($_POST['lastname']) && !empty($_POST['lastname']) &&
-      isset($_POST['birthday']) && preg_match($patternDate, $_POST['birthday'])
-    ) {
-      return true;
+      isset($_POST['birthday']) && !empty($_POST['birthday'])
+    )) {
+      $result = false;
     }
-    return false;
+
+    if (!preg_match($patternDate, $_POST['birthday'])) {
+      $result = false;
+    }
+
+    if (!isset($_SESSION['csrf_token']) || $_SESSION['csrf_token'] !== $_POST['csrf_token']) {
+      $result = false;
+    }
+
+    return $result;
   }
 
   public function setParamsFromRequestData(): void {

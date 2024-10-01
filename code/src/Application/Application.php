@@ -21,6 +21,7 @@ class Application
 
   public function run(): string
   {
+    session_start();
     $routeArr = explode('/', $_SERVER['REQUEST_URI']);
 
     if (isset($routeArr[1]) && $routeArr[1] != '') {
