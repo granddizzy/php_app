@@ -1,7 +1,7 @@
 CREATE TABLE `application1`.`users`
 (
     `id_user`                 INT          NOT NULL AUTO_INCREMENT,
-    `user_name`               VARCHAR(45)  NULL,
+    `user_name`               VARCHAR(45)  NOT NULL,
     `user_lastname`           VARCHAR(45)  NULL,
     `user_birthday_timestamp` INT          NULL,
     `login`                   VARCHAR(45)  NOT NULL,

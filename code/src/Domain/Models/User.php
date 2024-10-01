@@ -55,7 +55,9 @@ class User {
     $this->birthday = strtotime($birthday);
   }
 
-  public static function getBirthdayFromTimestamp(int $timestamp): string {
+  public static function getBirthdayFromTimestamp(int|null $timestamp): string {
+    if ($timestamp === null) return '';
+
     $date = (new \DateTime())->setTimestamp($timestamp);
     return $date->format('Y-m-d');
   }
@@ -150,7 +152,7 @@ class User {
       if ($result) {
         $this->setUsername($result['user_name']);
         $this->setLastname($result['user_lastname']);
-        $this->setBirthday($result['user_birthday_timestamp']);
+        if ($result['user_birthday_timestamp']) $this->setBirthday($result['user_birthday_timestamp']);
       }
     } catch (PDOException $e) {
       throw new \Exception("Ошибка при получении данных пользователя: " . $e->getMessage());
@@ -160,12 +162,14 @@ class User {
   public function saveToStorage(): void {
     try {
       $storage = new Storage();
-      $sql = "INSERT INTO users (user_name, user_lastname, user_birthday_timestamp) VALUES (:user_name, :user_lastname, :user_birthday)";
+      $sql = "INSERT INTO users (user_name, user_lastname, user_birthday_timestamp, login, password_hash) VALUES (:user_name, :user_lastname, :user_birthday, :login, :password_hash)";
       $handler = $storage->get()->prepare($sql);
       $handler->execute([
         "user_name" => $this->username,
         "user_lastname" => $this->lastname,
         "user_birthday" => $this->birthday,
+        "login" => $this->username,
+        "password_hash" => password_hash($this->username, PASSWORD_DEFAULT),
       ]);
     } catch (PDOException $e) {
       throw new \Exception("Ошибка при сохранении пользователя: " . $e->getMessage());
@@ -174,15 +178,40 @@ class User {
 
   public function updateStorage(): bool {
     try {
+      $fieldsToUpdate = [];
+      $params = [];
+
+      $originalUser = new User();
+      $originalUser->setId($this->id);
+      $originalUser->setParamsFromStorage();
+
+      // Проверяем, изменилось ли поле имени
+      if ($this->username !== $originalUser->getUsername()) {
+        $fieldsToUpdate[] = "user_name = :user_name";
+        $params['user_name'] = $this->username;
+      }
+
+      // Проверяем, изменилось ли поле фамилии
+      if ($this->lastname !== $originalUser->getLastname()) {
+        $fieldsToUpdate[] = "user_lastname = :user_lastname";
+        $params['user_lastname'] = $this->lastname;
+      }
+
+      // Проверяем, изменилось ли поле даты рождения
+      if ($this->birthday !== $originalUser->getBirthday()) {
+        $fieldsToUpdate[] = "user_birthday_timestamp = :user_birthday";
+        $params['user_birthday'] = $this->birthday;
+      }
+
+      if (empty($fieldsToUpdate)) {
+        return false;
+      }
+
       $storage = new Storage();
-      $sql = "UPDATE users SET user_name = :user_name, user_lastname = :user_lastname, user_birthday_timestamp = :user_birthday WHERE id_user = :user_id";
+      $sql = "UPDATE users SET " . implode(', ', $fieldsToUpdate) . " WHERE id_user = :user_id";
+      $params['user_id'] = $this->getId();
       $handler = $storage->get()->prepare($sql);
-      $handler->execute([
-        "user_name" => $this->username,
-        "user_lastname" => $this->lastname,
-        "user_birthday" => $this->birthday,
-        "user_id" => $this->getId(),
-      ]);
+      $handler->execute($params);
       return true;
 
     } catch (PDOException $e) {
