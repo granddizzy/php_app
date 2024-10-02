@@ -22,6 +22,9 @@ CREATE TABLE `application1`.`user_roles`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = 'utf8';
 
+INSERT INTO `application1`.`user_roles` (id_user_role, id_user, role)
+VALUES ('1', '1', 'admin');
+
 CREATE TABLE `application1`.`remember_me_tokens`
 (
     `id_user` INT(11) NOT NULL,

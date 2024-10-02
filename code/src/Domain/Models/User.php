@@ -249,7 +249,8 @@ class User {
     $handler->execute(['token' => $token]);
     $result = $handler->fetch();
     if ($result) {
-      $user = new User($result['id_user']);
+      $user = new User();
+      $user->setId($result['id_user']);
       $user->setParamsFromStorage();
       return $user;
     }

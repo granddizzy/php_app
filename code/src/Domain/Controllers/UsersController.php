@@ -10,7 +10,10 @@ use GB\App\Domain\Models\User;
 class UsersController extends AbstractController {
   protected array $actionsPermissions = [
     'actionHash' => ['admin', 'manager'],
-    'actionSave' => ['admin']
+    'actionSave' => ['admin'],
+    'actionEdit' => ['admin'],
+    'actionUpdate' => ['admin'],
+    'actionDelete' => ['admin']
   ];
 
   public function actionIndex(): string {
@@ -115,8 +118,8 @@ class UsersController extends AbstractController {
       // Сохраняем токен в базе данных
       User::saveRememberMeToken($userId, $token);
 
-      // Устанавливаем куку с токеном на 30 дней
-      setcookie('remember_me', $token, time() + (86400 * 30), "/");
+      // Устанавливаем куку с токеном на 7 дней
+      setcookie('remember_me', $token, time() + (86400 * 7), "/");
     }
 
     if (!$result) {
@@ -136,9 +139,7 @@ class UsersController extends AbstractController {
 
   public function actionLogout() {
     // Удаляем токен из базы данных
-    if (isset($_COOKIE['remember_me'])) {
-      User::deleteRememberMeToken($_SESSION['id_user']);
-    }
+    User::deleteRememberMeToken($_SESSION['id_user']);
 
     session_unset();
     session_destroy();

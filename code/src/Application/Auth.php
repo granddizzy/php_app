@@ -14,12 +14,12 @@ class Auth {
 
     $handler = Application::$storage->get()->prepare($sql);
     $handler->execute(['login' => $login]);
-    $result = $handler->fetchAll();
+    $result = $handler->fetch();
 
-    if (!empty($result) && password_verify($password, $result[0]['password_hash'])) {
-      $_SESSION['user_name'] = $result[0]['user_name'];
-      $_SESSION['user_lastname'] = $result[0]['user_lastname'];
-      $_SESSION['id_user'] = $result[0]['id_user'];
+    if (!empty($result) && password_verify($password, $result['password_hash'])) {
+      $_SESSION['user_name'] = $result['user_name'];
+      $_SESSION['user_lastname'] = $result['user_lastname'];
+      $_SESSION['id_user'] = $result['id_user'];
 
       return true;
     } else {
@@ -27,8 +27,8 @@ class Auth {
     }
   }
 
-  public function autoAuth(): void {
-    if (isset($_COOKIE['remember_me'])) {
+  public function autoAuth($method): void {
+    if (isset($_COOKIE['remember_me']) && !isset($_SESSION['id_user'])) {
       $token = $_COOKIE['remember_me'];
 
       // Проверяем токен в базе данных

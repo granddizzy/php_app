@@ -33,8 +33,6 @@ class Application {
 
     $this->controllerName = Application::APP_NAMESPACE . ucfirst($controllerName) . 'Controller';
 
-    Application::$auth->autoAuth();
-
     if (class_exists($this->controllerName)) {
       if (isset($routeArr[2]) && $routeArr[2] != '') {
         $methodName = $routeArr[2];
@@ -47,11 +45,15 @@ class Application {
       if (method_exists($this->controllerName, $this->methodName)) {
         $controllerInstance = new $this->controllerName;
 
+        // проверяем автоматическую авторизацию по кукам
+        if ($methodName != "logout" && $methodName != "login") { Application::$auth->autoAuth($methodName);}
+
         if ($controllerInstance instanceof AbstractController) {
           if ($this->checkAccessToMethod($controllerInstance, $this->methodName)) {
             return call_user_func_array([$controllerInstance, $this->methodName], []);
           } else {
-            return "Нет доступа к методу";
+            $controllerInstance = new PageController;
+            return call_user_func_array([$controllerInstance, 'actionError'], ["Нет доступа к методу"]);
           }
         }
 

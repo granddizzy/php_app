@@ -31,7 +31,7 @@ class Render {
     if (isset($_SESSION['user_name'])) {
       $templateVariables['user_authorized'] = true;
       $templateVariables['username'] = $_SESSION['user_name'];
-      $templateVariables['userlastname'] = $_SESSION['user_lastname'];
+      $templateVariables['lastname'] = $_SESSION['user_lastname'];
     }
 
     return $this->environment->render($contentTemplateName, $templateVariables);

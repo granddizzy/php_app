@@ -1,6 +1,6 @@
 {% if not user_authorized %}
     <p><a href="{{ baseUrl }}/users/auth">Вход в систему</a></p>
 {% else %}
-    <p>{{ username }}{{ lastname }}, добро пожаловать на сайт</p>
+    <p>{{ username }} {{ lastname }}, добро пожаловать на сайт</p>
     <p><a href="{{ baseUrl }}/users/logout">Выход</a> </p>
 {% endif %}
