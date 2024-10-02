@@ -27,7 +27,7 @@ class Auth {
     }
   }
 
-  public function autoAuth($method): void {
+  public function autoAuth(): void {
     if (isset($_COOKIE['remember_me']) && !isset($_SESSION['id_user'])) {
       $token = $_COOKIE['remember_me'];
 

@@ -46,7 +46,7 @@ class Application {
         $controllerInstance = new $this->controllerName;
 
         // проверяем автоматическую авторизацию по кукам
-        if ($methodName != "logout" && $methodName != "login") { Application::$auth->autoAuth($methodName);}
+        if ($methodName != "logout" && $methodName != "login") Application::$auth->autoAuth();
 
         if ($controllerInstance instanceof AbstractController) {
           if ($this->checkAccessToMethod($controllerInstance, $this->methodName)) {
