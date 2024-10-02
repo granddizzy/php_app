@@ -6,6 +6,10 @@ use GB\App\Domain\Controllers\PageController;
 use GB\App\Domain\Models\User;
 use GB\App\Infrastructure\Config;
 use GB\App\Infrastructure\Storage;
+use Monolog\Handler\FirePHPHandler;
+use Monolog\Handler\StreamHandler;
+use Monolog\Level;
+use Monolog\Logger;
 
 class Application {
   private const APP_NAMESPACE = "GB\\App\\Domain\\Controllers\\";
@@ -14,11 +18,18 @@ class Application {
   public static Config $config;
   public static Storage $storage;
   public static Auth $auth;
+  public static Logger $logger;
 
   public function __construct() {
     Application::$config = new Config();
     Application::$storage = new Storage();
     Application::$auth = new Auth();
+    Application::$logger = new Logger('application_logger');
+    Application::$logger->pushHandler(
+      new StreamHandler($_SERVER['DOCUMENT_ROOT'] . "/logs/" . Application::$config->get()['log']['LOG_FILE']
+        . "-" . date("Y-m-d") . ".log",
+        level::Debug));
+    Application::$logger->pushHandler(new FirePHPHandler());
   }
 
   public function run(): string {
@@ -59,6 +70,10 @@ class Application {
 
         return call_user_func_array([$controllerInstance, $this->methodName], []);
       } else {
+        $logMessage = "Метод " . $this->methodName . " не существует в " . $this->controllerName . " | ";
+        $logMessage .= "попытка вызова адреса " . $_SERVER['REQUEST_URI'];
+        Application::$logger->error($logMessage);
+
         $controllerInstance = new PageController;
         return call_user_func_array([$controllerInstance, 'actionError'], ["Метод не существует"]);
       }

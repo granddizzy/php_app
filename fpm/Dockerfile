@@ -13,6 +13,9 @@ RUN apt-get update && apt-get install -y \
 # Установка и активация расширения memcache
 RUN pecl install memcache && docker-php-ext-enable memcache
 
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug
+
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 ENV COMPOSER_ALLOW_SUPERUSER 1

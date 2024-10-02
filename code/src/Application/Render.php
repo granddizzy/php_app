@@ -34,6 +34,11 @@ class Render {
       $templateVariables['lastname'] = $_SESSION['user_lastname'];
     }
 
+//    ob_start();
+//    \xdebug_info();
+//    $xdebug = ob_get_clean();
+//    $templateVariables['xdebug'] = $xdebug;
+
     return $this->environment->render($contentTemplateName, $templateVariables);
   }
 
