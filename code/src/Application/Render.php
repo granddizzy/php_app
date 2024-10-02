@@ -13,10 +13,10 @@ class Render {
 
 
   public function __construct() {
-    $this->loader = new FilesystemLoader($_SERVER['DOCUMENT_ROOT'] . $this->viewFolder);
+    $this->loader = new FilesystemLoader($_SERVER['DOCUMENT_ROOT'] . "/../" . $this->viewFolder);
 
     $this->environment = new Environment($this->loader,
-    //      ['cache' => $_SERVER['DOCUMENT_ROOT'] . '/cache']
+    //      ['cache' => $_SERVER['DOCUMENT_ROOT'] . '/../cache']
     );
   }
 

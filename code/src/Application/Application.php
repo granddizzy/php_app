@@ -26,7 +26,7 @@ class Application {
     Application::$auth = new Auth();
     Application::$logger = new Logger('application_logger');
     Application::$logger->pushHandler(
-      new StreamHandler($_SERVER['DOCUMENT_ROOT'] . "/logs/" . Application::$config->get()['log']['LOG_FILE']
+      new StreamHandler($_SERVER['DOCUMENT_ROOT'] . "/../logs/" . Application::$config->get()['log']['LOG_FILE']
         . "-" . date("Y-m-d") . ".log",
         level::Debug));
     Application::$logger->pushHandler(new FirePHPHandler());
