@@ -1,8 +1,28 @@
 <h2>Добавить пользователя</h2>
-<form method="POST" action="{{ baseUrl }}/users/save/">
+<form method="POST" action="{{ baseUrl }}/users/save/" class="needs-validation" novalidate>
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    <input type="text" name="name" placeholder="Имя" required>
-    <input type="text" name="lastname" placeholder="Фамилия" required>
-    <input type="date" name="birthday" placeholder="Дата рождения">
-    <button type="submit">Добавить</button>
+
+    <div class="mb-3">
+        <label for="name" class="form-label">Имя</label>
+        <input type="text" name="name" id="name" class="form-control" placeholder="Имя" required>
+        <div class="invalid-feedback">
+            Пожалуйста, укажите имя.
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label for="lastname" class="form-label">Фамилия</label>
+        <input type="text" name="lastname" id="lastname" class="form-control" placeholder="Фамилия" required>
+        <div class="invalid-feedback">
+            Пожалуйста, укажите фамилию.
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label for="birthday" class="form-label">Дата рождения</label>
+        <input type="date" name="birthday" id="birthday" class="form-control" placeholder="Дата рождения">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Добавить</button>
 </form>
+

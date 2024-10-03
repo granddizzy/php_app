@@ -1,27 +1,32 @@
 {% extends 'main.twig' %}
 
- {% block content %}
+{% block content %}
+    <div class="container mt-4">
+        <h1>{{ title }}</h1>
+        <p>{{ message }}</p>
 
-     <p>{{ title }}</p>
-     <p>{{ message }}</p>
-     <ul id="navigation">
-         {% for user in users %}
-             <li>
-                 {{ user.getUsername() }} {{ user.getLastname() }}. День
-                 рождения {{ user.getBirthday() ? user.getBirthday()|date('d.m.Y') : 'Не указана' }}
+        <ul class="list-group">
+            {% for user in users %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ user.getUsername() }} {{ user.getLastname() }}</strong><br>
+                        <small>День рождения: {{ user.getBirthday() ? user.getBirthday()|date('d.m.Y') : 'Не указана' }}</small>
+                    </div>
+                    <div>
+                        <form method="GET" action="{{ baseUrl }}/users/delete/" style="display:inline;">
+                            <input type="hidden" name="id" value="{{ user.getId() }}">
+                            <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+                        </form>
 
-                 <form method="GET" action="{{ baseUrl }}/users/delete/" style="display:inline;">
-                     <input type="hidden" name="id" value="{{ user.getId() }}">
-                     <button type="submit">Удалить</button>
-                 </form>
+                        <form method="GET" action="{{ baseUrl }}/users/edit/" style="display:inline;">
+                            <input type="hidden" name="id" value="{{ user.getId() }}">
+                            <button type="submit" class="btn btn-warning btn-sm">Изменить</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
 
-                 <form method="GET" action="{{ baseUrl }}/users/edit/" style="display:inline;">
-                     <input type="hidden" name="id" value="{{ user.getId() }}">
-                     <button type="submit">Изменить</button>
-                 </form>
-             </li>
-         {% endfor %}
-     </ul>
-     {% include 'users-add.twig' %}
-
- {% endblock %}
+        {% include 'users-add.twig' %}
+    </div>
+{% endblock %}

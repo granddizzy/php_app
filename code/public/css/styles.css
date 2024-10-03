@@ -1,0 +1,13 @@
+@charset "UTF-8";
+html, body {
+  height: 100%; }
+
+body {
+  display: flex;
+  flex-direction: column; }
+
+main {
+  flex: 1;
+  /* Позволяет основному содержимому занимать всё доступное пространство */ }
+
+/*# sourceMappingURL=styles.css.map */

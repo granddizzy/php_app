@@ -151,4 +151,22 @@ class UsersController extends AbstractController {
     header("Location: {$baseUrl}/users/auth");
     exit();
   }
+
+  public function actionIndexRefresh(): string {
+    $limit = null;
+
+    if (isset($_POST['maxId']) && $_POST['maxId'] > 0) {
+      $limit = $_POST['maxId'];
+    }
+
+    $users = User::getAllUsersFromStorage($limit);
+    $userData = [];
+    if (count($users) > 0) {
+      foreach ($users as $user) {
+        $userData[] = $user->getUserDataAsArray();
+      }
+    }
+
+    return json_encode($userData);
+  }
 }

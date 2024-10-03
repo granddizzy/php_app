@@ -1,15 +1,18 @@
 {% extends 'main.twig' %}
 
- {% block content %}
+{% block content %}
+    <div class="text-center">
+        <h1 class="display-4">Произошла ошибка</h1>
+        <p class="lead"><strong>Сообщение:</strong> {{ errorMessage }}</p>
 
-     <h1>Произошла ошибка</h1>
-     <p><strong>Сообщение:</strong> {{ errorMessage }}</p>
+        {% if debug %}
+            <p><strong>Файл:</strong> {{ errorFile }} (строка {{ errorLine }})</p>
+            <p><strong>Трассировка:</strong></p>
+            <pre class="bg-light p-3">{{ errorTrace }}</pre>
+        {% endif %}
 
-     {% if debug %}
-         <p><strong>Файл:</strong> {{ errorFile }} (строка {{ errorLine }})</p>
-         <p><strong>Трассировка:</strong></p>
-         <pre>{{ errorTrace }}</pre>
-     {% endif %}
-
-     <p><a href="javascript:history.back()">Вернуться назад</a></p>
- {% endblock %}
+        <p>
+            <a href="javascript:history.back()" class="btn btn-secondary">Вернуться назад</a>
+        </p>
+    </div>
+{% endblock %}

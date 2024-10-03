@@ -1,5 +1,14 @@
 {% extends 'main.twig' %}
 
- {% block content %}
-     <p>Текущее время: {{ currentTime }}</p>
- {% endblock %}
+{% block content %}
+    <div class="container mt-4">
+        <div class="card text-center">
+            <div class="card-header">
+                Текущее время
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ currentTime }}</h5>
+            </div>
+        </div>
+    </div>
+{% endblock %}

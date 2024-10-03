@@ -1,28 +1,36 @@
 {% extends 'main.twig' %}
 
- {% block content %}
-     {% if not authsuccess and autherror %}
-         {{ autherror }}
-     {% endif %}
+{% block content %}
+    {% if not authsuccess and autherror %}
+        <div class="alert alert-danger" role="alert">
+            {{ autherror }}
+        </div>
+    {% endif %}
 
-     <form action="{{ baseUrl }}/users/login" method="POST">
-         <input id="csrf_token" type="hidden" name="csrf_token" value="{{ csrf_token }}">
-         <p>
-             <label for="user-login">Логин:</label>
-             <input id="user-login" type="text" name="login">
-         </p>
-         <p>
-             <label for="user-password">Пароль:</label>
-             <input id="user-password" type="password" name="password">
-         </p>
-         <p>
-             <label for="remember-me">
-                 <input id="remember-me" type="checkbox" name="remember" value="1">
-                 Запомнить меня
-             </label>
-         </p>
-         <p>
-             <input type="submit" value="Войти">
-         </p>
-     </form>
- {% endblock %}
+    <form action="{{ baseUrl }}/users/login" method="POST" class="needs-validation" novalidate>
+        <input id="csrf_token" type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+        <div class="mb-3">
+            <label for="user-login" class="form-label">Логин:</label>
+            <input id="user-login" type="text" name="login" class="form-control" required>
+            <div class="invalid-feedback">
+                Пожалуйста, введите логин.
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="user-password" class="form-label">Пароль:</label>
+            <input id="user-password" type="password" name="password" class="form-control" required>
+            <div class="invalid-feedback">
+                Пожалуйста, введите пароль.
+            </div>
+        </div>
+
+        <div class="mb-3 form-check">
+            <input id="remember-me" type="checkbox" name="remember" value="1" class="form-check-input">
+            <label for="remember-me" class="form-check-label">Запомнить меня</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Войти</button>
+    </form>
+{% endblock %}

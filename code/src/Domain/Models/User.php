@@ -62,9 +62,14 @@ class User {
     return $date->format('Y-m-d');
   }
 
-  public static function getAllUsersFromStorage(): array {
+  public static function getAllUsersFromStorage($limit = null): array {
     try {
       $sql = "SELECT * FROM users";
+
+      if (isset($limit) ** $limit > 0) {
+        $sql .= " WHERE id_user > " . (int)$limit;
+      }
+
       $handler = Application::$storage->get()->prepare($sql);
       $handler->execute();
       $result = $handler->fetchAll();
@@ -262,5 +267,16 @@ class User {
     $sql = "DELETE FROM remember_me_tokens WHERE id_user = :id_user";
     $handler = Application::$storage->get()->prepare($sql);
     $handler->execute(['id_user' => $userId]);
+  }
+
+  public function getUserDataAsArray(): array {
+    $userArray = [
+      'id' => $this->getId(),
+      'username' => $this->getUsername(),
+      'lastname' => $this->getLastname(),
+      'birthday' => date('d.m.Y', $this->getBirthday())
+    ];
+
+    return $userArray;
   }
 }

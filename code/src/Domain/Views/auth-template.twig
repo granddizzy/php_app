@@ -1,6 +1,13 @@
 {% if not user_authorized %}
-    <p><a href="{{ baseUrl }}/users/auth">Вход в систему</a></p>
+    <p class="mb-0"><a href="{{ baseUrl }}/users/auth" class="btn btn-outline-primary">Вход в систему</a></p>
 {% else %}
-    <p>{{ username }} {{ lastname }}, добро пожаловать на сайт</p>
-    <p><a href="{{ baseUrl }}/users/logout">Выход</a> </p>
+    <div class="dropdown">
+        <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="user-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ username }} {{ lastname }}
+        </a>
+        <ul class="dropdown-menu text-small" aria-labelledby="user-dropdown">
+{#            <li><a class="dropdown-item" href="{{ baseUrl }}/users/profile">Профиль</a></li>#}
+            <li><a class="dropdown-item" href="{{ baseUrl }}/users/logout">Выход</a></li>
+        </ul>
+    </div>
 {% endif %}

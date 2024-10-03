@@ -41,7 +41,7 @@ class Application {
     } else {
       $controllerName = 'page';
     }
-
+    
     $this->controllerName = Application::APP_NAMESPACE . ucfirst($controllerName) . 'Controller';
 
     if (class_exists($this->controllerName)) {
