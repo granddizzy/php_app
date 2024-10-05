@@ -20,6 +20,7 @@ class Auth {
       $_SESSION['user_name'] = $result['user_name'];
       $_SESSION['user_lastname'] = $result['user_lastname'];
       $_SESSION['id_user'] = $result['id_user'];
+      $_SESSION['roles'] = User::getUserRoles();
 
       return true;
     } else {
@@ -39,6 +40,7 @@ class Auth {
         $_SESSION['user_name'] = $user->getUsername();
         $_SESSION['user_lastname'] = $user->getLastname();
         $_SESSION['id_user'] = $user->getId();
+        $_SESSION['roles'] = User::getUserRoles();
       }
     }
   }

@@ -19,13 +19,13 @@ class UsersController extends AbstractController {
   public function actionIndex(): string {
     $users = [];
     $render = new Render();
-    if (!$users) {
-      return $render->renderPageWithForm('users-index.twig',
-        ['title' => "Список пользователей:", 'message' => "Список пуст."]);
-    } else {
-      return $render->renderPageWithForm('users-index.twig',
-        ['title' => 'Список пользователей:', 'users' => $users]);
+
+    $templateVariables = [];
+    if (isset($_SESSION['roles']) && !empty($_SESSION['roles']) && in_array('admin', $_SESSION['roles'])) {
+      $templateVariables = ['admin' => "true"];
     }
+    return $render->renderPageWithForm('users-index.twig',
+      ['title' => 'Список пользователей:', 'users' => $users, ...$templateVariables]);
   }
 
   public function actionEdit(): string {
@@ -37,7 +37,6 @@ class UsersController extends AbstractController {
       $user->setParamsFromStorage();
       return $render->renderPageWithForm('user-edit.twig',
         ["title" => "Пользлватели:",
-          "message" => "Список пуст.",
           "userId" => $id,
           "username" => $user->getUsername(),
           "lastname" => $user->getLastname(),
@@ -81,6 +80,10 @@ class UsersController extends AbstractController {
 
     if (!$id) {
       throw new \Exception("Не указан параметр id.");
+    }
+
+    if ($id == 1) {
+      throw new \Exception("Нельзя удалить основного администратора.");
     }
 
     if (User::deleteUserFromStorage($id)) {

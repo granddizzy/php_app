@@ -41,56 +41,67 @@ class Application {
     } else {
       $controllerName = 'page';
     }
-    
+
     $this->controllerName = Application::APP_NAMESPACE . ucfirst($controllerName) . 'Controller';
 
-    if (class_exists($this->controllerName)) {
-      if (isset($routeArr[2]) && $routeArr[2] != '') {
-        $methodName = $routeArr[2];
-      } else {
-        $methodName = 'index';
-      }
-
-      $this->methodName = "action" . ucfirst($methodName);
-
-      if (method_exists($this->controllerName, $this->methodName)) {
-        $controllerInstance = new $this->controllerName;
-
-        // проверяем автоматическую авторизацию по кукам
-        if ($methodName != "logout" && $methodName != "login") Application::$auth->autoAuth();
-
-        if ($controllerInstance instanceof AbstractController) {
-          if ($this->checkAccessToMethod($controllerInstance, $this->methodName)) {
-            return call_user_func_array([$controllerInstance, $this->methodName], []);
-          } else {
-            $controllerInstance = new PageController;
-            return call_user_func_array([$controllerInstance, 'actionError'], ["Нет доступа к методу"]);
-          }
+    try {
+      if (class_exists($this->controllerName)) {
+        if (isset($routeArr[2]) && $routeArr[2] != '') {
+          $methodName = $routeArr[2];
+        } else {
+          $methodName = 'index';
         }
 
-        return call_user_func_array([$controllerInstance, $this->methodName], []);
-      } else {
-        $logMessage = "Метод " . $this->methodName . " не существует в " . $this->controllerName . " | ";
-        $logMessage .= "попытка вызова адреса " . $_SERVER['REQUEST_URI'];
-        Application::$logger->error($logMessage);
+        $this->methodName = "action" . ucfirst($methodName);
 
+        if (method_exists($this->controllerName, $this->methodName)) {
+          $controllerInstance = new $this->controllerName;
+
+          // проверяем автоматическую авторизацию по кукам
+          if ($methodName != "logout" && $methodName != "login") Application::$auth->autoAuth();
+
+          if ($controllerInstance instanceof AbstractController) {
+            if ($this->checkAccessToMethod($controllerInstance, $this->methodName)) {
+              return call_user_func_array([$controllerInstance, $this->methodName], []);
+            } else {
+              $controllerInstance = new PageController;
+              return call_user_func_array([$controllerInstance, 'actionError'], ["Нет доступа к методу"]);
+            }
+          }
+
+          return call_user_func_array([$controllerInstance, $this->methodName], []);
+        } else {
+          $logMessage = "Метод " . $this->methodName . " не существует в " . $this->controllerName . " | ";
+          $logMessage .= "попытка вызова адреса " . $_SERVER['REQUEST_URI'];
+          Application::$logger->error($logMessage);
+
+          $controllerInstance = new PageController;
+          return call_user_func_array([$controllerInstance, 'actionError'], ["Метод не существует"]);
+        }
+      } else {
         $controllerInstance = new PageController;
-        return call_user_func_array([$controllerInstance, 'actionError'], ["Метод не существует"]);
+        return call_user_func_array([$controllerInstance, 'actionError404'], []);
       }
-    } else {
-      $controllerInstance = new PageController;
-      return call_user_func_array([$controllerInstance, 'actionError404'], []);
+    } catch (\Exception $e) {
+      $logMessage = $e->getMessage();
+      Application::$logger->error($logMessage);
+
+      throw new \Exception($e->getMessage());
     }
   }
 
   public function checkAccessToMethod(AbstractController $controllerInstance, string $methodName): bool {
-    $userRoles = User::getUserRoles();
     $rules = $controllerInstance->getActionsPermissions($methodName);
+
+    $roles = [];
+    if (isset($_SESSION['roles']) && !empty($_SESSION['roles'])) {
+      $roles = $_SESSION['roles'];
+    }
 
     $isAllowed = false;
     if (!empty($rules)) {
       foreach ($rules as $rolePermission) {
-        if (in_array($rolePermission, $userRoles)) {
+        if (in_array($rolePermission, $roles)) {
           $isAllowed = true;
           break;
         }

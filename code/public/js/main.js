@@ -2,6 +2,7 @@ async function handleUpdateUserList() {
   try {
     const userList = document.querySelector('.list-group');
     const baseUrl = userList.dataset.baseUrl;
+    const isAdmin = userList.dataset.admin === 'true';
 
     const lastUserLi = userList.lastElementChild;
     const lastUserId = lastUserLi ? lastUserLi.dataset.id : 0;
@@ -21,17 +22,23 @@ async function handleUpdateUserList() {
               <strong>${user.username} ${user.lastname}</strong><br>
               <small>День рождения: ${user.birthday ? user.birthday : 'Не указана'}</small>
             </div>
-            <div>
-              <form method="GET" action="${baseUrl}/users/delete/" style="display:inline;">
-                <input type="hidden" name="id" value="${user.id}">
-                <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
-              </form>
-              <form method="GET" action="${baseUrl}/users/edit/" style="display:inline;">
-                <input type="hidden" name="id" value="${user.id}">
-                <button type="submit" class="btn btn-warning btn-sm">Изменить</button>
-              </form>
-            </div>
           `;
+
+          if (isAdmin) {
+            const actionButtons = `
+              <div>
+                <form method="GET" action="${baseUrl}/users/delete/" style="display:inline;">
+                  <input type="hidden" name="id" value="${user.id}">
+                  <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+                </form>
+                <form method="GET" action="${baseUrl}/users/edit/" style="display:inline;">
+                  <input type="hidden" name="id" value="${user.id}">
+                  <button type="submit" class="btn btn-warning btn-sm">Изменить</button>
+                </form>
+              </div>
+            `;
+            li.innerHTML += actionButtons;
+          }
           userList.appendChild(li);
         });
       }
