@@ -66,11 +66,14 @@ class User {
     try {
       $sql = "SELECT * FROM users";
 
-      if (isset($limit) ** $limit > 0) {
-        $sql .= " WHERE id_user > " . (int)$limit;
+      if (isset($limit) && $limit > 0) {
+        $sql .= " WHERE id_user > :limit";
       }
 
       $handler = Application::$storage->get()->prepare($sql);
+      if ($limit > 0) {
+        $handler->bindParam(':limit', $limit, PDO::PARAM_INT);
+      }
       $handler->execute();
       $result = $handler->fetchAll();
 

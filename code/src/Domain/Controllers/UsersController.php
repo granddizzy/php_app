@@ -17,8 +17,7 @@ class UsersController extends AbstractController {
   ];
 
   public function actionIndex(): string {
-    $users = User::getAllUsersFromStorage();
-
+    $users = [];
     $render = new Render();
     if (!$users) {
       return $render->renderPageWithForm('users-index.twig',
@@ -155,8 +154,8 @@ class UsersController extends AbstractController {
   public function actionIndexRefresh(): string {
     $limit = null;
 
-    if (isset($_POST['maxId']) && $_POST['maxId'] > 0) {
-      $limit = $_POST['maxId'];
+    if (isset($_GET['maxId']) && $_GET['maxId'] > 0) {
+      $limit = $_GET['maxId'];
     }
 
     $users = User::getAllUsersFromStorage($limit);
