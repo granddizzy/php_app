@@ -1,4 +1,4 @@
-async function updateUserList() {
+async function handleUpdateUserList() {
   try {
     const userList = document.querySelector('.list-group');
     const baseUrl = userList.dataset.baseUrl;
@@ -42,10 +42,34 @@ async function updateUserList() {
 }
 
 function startUsersUpdating() {
-  updateUserList();
-  updateInterval = setInterval(updateUserList, 10000);
+  handleUpdateUserList();
+  updateInterval = setInterval(handleUpdateUserList, 10000);
 }
 
 function stopUsersUpdating() {
   clearInterval(updateInterval);
+}
+
+async function handleUserDelete(event) {
+  if (event.target.matches('.btn-danger')) {
+    event.preventDefault();
+
+    const userList = document.querySelector('.list-group');
+    const form = event.target.closest('form');
+    const userId = form.querySelector('input[name="id"]').value;
+    const baseUrl = userList.dataset.baseUrl;
+
+    try {
+      const response = await fetch(`${baseUrl}/users/delete/?id=${userId}`, {
+        method: 'GET',
+      });
+
+      if (response.ok) {
+        const li = form.closest('li');
+        li.remove();
+      }
+    } catch (error) {
+      console.error('Ошибка при удалении пользователя:', error);
+    }
+  }
 }

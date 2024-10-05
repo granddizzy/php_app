@@ -37,6 +37,9 @@
       document.addEventListener('DOMContentLoaded', function () {
         window.addEventListener('beforeunload', stopUsersUpdating);
         startUsersUpdating();
+
+        const userList = document.querySelector('.list-group');
+        userList.addEventListener('click', handleUserDelete);
       });
     </script>
 {% endblock %}
