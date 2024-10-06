@@ -36,11 +36,11 @@ class UsersController extends AbstractController {
       $user->setId($id);
       $user->setParamsFromStorage();
       return $render->renderPageWithForm('user-edit.twig',
-        ["title" => "Пользлватели:",
-          "userId" => $id,
-          "username" => $user->getUsername(),
-          "lastname" => $user->getLastname(),
-          "birthday" => User::getBirthdayFromTimestamp($user->getBirthday())]);
+        ["title" => "Пользователи:",
+          "edit_userId" => $id,
+          "edit_username" => $user->getUsername(),
+          "edit_lastname" => $user->getLastname(),
+          "edit_birthday" => User::getBirthdayFromTimestamp($user->getBirthday())]);
     } else {
       return $render->renderPage('users-index.twig',
         ['title' => "Пользователи:", 'message' => 'Не указан id:']);

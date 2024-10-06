@@ -5,11 +5,11 @@
     <h2>Изменить пользователя</h2>
     <form method="POST" action="{{ baseUrl }}/users/update/{{ userId }}" class="needs-validation" novalidate>
         <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-        <input type="hidden" name="id" value="{{ userId }}">
+        <input type="hidden" name="id" value="{{ edit_userId }}">
 
         <div class="mb-3">
             <label for="name" class="form-label">Имя</label>
-            <input type="text" name="name" id="name" class="form-control" placeholder="Имя" value="{{ username }}" required>
+            <input type="text" name="name" id="name" class="form-control" placeholder="Имя" value="{{ edit_username }}" required>
             <div class="invalid-feedback">
                 Пожалуйста, укажите имя.
             </div>
@@ -17,7 +17,7 @@
 
         <div class="mb-3">
             <label for="lastname" class="form-label">Фамилия</label>
-            <input type="text" name="lastname" id="lastname" class="form-control" placeholder="Фамилия" value="{{ lastname }}" required>
+            <input type="text" name="lastname" id="lastname" class="form-control" placeholder="Фамилия" value="{{ edit_lastname }}" required>
             <div class="invalid-feedback">
                 Пожалуйста, укажите фамилию.
             </div>
@@ -25,7 +25,7 @@
 
         <div class="mb-3">
             <label for="birthday" class="form-label">Дата рождения</label>
-            <input type="date" name="birthday" id="birthday" class="form-control" placeholder="Дата рождения" value="{{ birthday }}">
+            <input type="date" name="birthday" id="birthday" class="form-control" placeholder="Дата рождения" value="{{ edit_birthday }}">
         </div>
 
         <button type="submit" class="btn btn-primary">Сохранить</button>
